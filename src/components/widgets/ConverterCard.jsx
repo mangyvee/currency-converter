@@ -1,77 +1,57 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React, { useState } from "react";
 
-export default function ConverterCard() {
-  const [amount, setAmount] = useState("");
+const ConverterCard = () => {
   const [fromCurrency, setFrom] = useState("USD");
-  const [toCurrency, setTo] = useState("EUR");
-  const [result, setResult] = useState(null);
-  const [rate, setRate] = useState(null);
-  const [currencies, setCurrencies] = useState([]);
+  const [toCurrency, setTo] = useState("KES");
+  const [amount, setAmount] = useState("");
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const r = await axios.get("https://open.er-api.com/v6/latest/USD");
-        setCurrencies(Object.keys(r.data.rates));
-      } catch (e) { console.error(e); }
-    })();
-  }, []);
-
-  const handleConvert = async () => {
-    try {
-      const r = await axios.get(`https://open.er-api.com/v6/latest/${fromCurrency}`);
-      const ex = r.data.rates[toCurrency];
-      setRate(ex);
-      setResult((Number(amount || 0) * ex).toFixed(2));
-    } catch (e) { console.error(e); }
-  };
+  const currencies = ["USD", "EUR", "KES", "GBP", "JPY"];
 
   return (
-    <div className="glass p-4 md:p-6">
-      <div className="text-lg font-medium mb-3">Quick Convert</div>
+    <div className="bg-white/5 backdrop-blur rounded-2xl p-6 shadow-lg">
+      <h2 className="text-xl font-bold mb-4">Quick Converter</h2>
 
-      <div className="grid grid-cols-12 gap-3">
-        <div className="col-span-12 md:col-span-4">
-          <input
-            type="number"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            placeholder="Amount"
-            className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm outline-none"
-          />
-        </div>
-        <div className="col-span-6 md:col-span-3">
-          <select
-            value={fromCurrency}
-            onChange={(e) => setFrom(e.target.value)}
-            className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm"
-          >
-            {currencies.map((c) => <option key={c}>{c}</option>)}
-          </select>
-        </div>
-        <div className="col-span-6 md:col-span-3">
-          <select
-            value={toCurrency}
-            onChange={(e) => setTo(e.target.value)}
-            className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm"
-          >
-            {currencies.map((c) => <option key={c}>{c}</option>)}
-          </select>
-        </div>
-        <div className="col-span-12 md:col-span-2">
-          <button
-            onClick={handleConvert}
-            className="w-full bg-white/10 hover:bg-white/15 border border-white/10 rounded-xl py-2 text-sm font-medium"
-          >
-            Convert
-          </button>
-        </div>
-      </div>
+      <div className="space-y-4">
+        {/* Amount */}
+        <input
+          type="number"
+          value={amount}
+          onChange={(e) => setAmount(e.target.value)}
+          placeholder="Enter amount"
+          className="w-full rounded-xl bg-white/5 border border-white/10 p-3 text-white placeholder-gray-400 focus:outline-none focus:border-emerald-400"
+        />
 
-      <div className="mt-3 text-sm text-white/80">
-        {result && rate ? <>Converted: <span className="font-medium">{result}</span> <span className="text-white/50">({rate.toFixed(4)})</span></> : " "}
+        {/* From currency */}
+        <select
+          value={fromCurrency}
+          onChange={(e) => setFrom(e.target.value)}
+          className="select-dark w-full"
+        >
+          {currencies.map((c) => (
+            <option key={c}>{c}</option>
+          ))}
+        </select>
+
+        {/* To currency */}
+        <select
+          value={toCurrency}
+          onChange={(e) => setTo(e.target.value)}
+          className="select-dark w-full"
+        >
+          {currencies.map((c) => (
+            <option key={c}>{c}</option>
+          ))}
+        </select>
+
+        {/* Result */}
+        <div className="text-sm text-gray-300 mt-4">
+          {amount
+            ? `${amount} ${fromCurrency} ≈ ${(amount * 150).toFixed(2)} ${toCurrency}`
+            : "Enter amount to see conversion"}
+        </div>
       </div>
     </div>
   );
-}
+};
+
+export default ConverterCard;

@@ -1,45 +1,78 @@
+// src/components/Homepage.jsx
 import React from "react";
-import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
+import { Menu } from "lucide-react";
 
 export default function Homepage({ onStart }) {
+  const navigate = useNavigate();
+  const go = onStart || (() => navigate("/dashboard"));
+
   return (
-    <div className="relative min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-purple-900 via-indigo-900 to-gray-900 overflow-hidden px-4">
-      
-      {/* Floating Background Circles */}
-      <motion.div 
-        className="absolute w-80 h-80 bg-purple-700/20 rounded-full top-12 left-12 animate-float"
-        animate={{ y: [0, 20, 0] }}
-        transition={{ duration: 7, repeat: Infinity }}
-      />
-      <motion.div 
-        className="absolute w-60 h-60 bg-indigo-500/20 rounded-full bottom-16 right-16 animate-float"
-        animate={{ y: [0, -20, 0] }}
-        transition={{ duration: 6, repeat: Infinity }}
-      />
+    <div className="relative min-h-screen overflow-hidden bg-[#0a0f14] text-white">
+      {/* smooth Framer-like background (uses .hero-bg from index.css) */}
+      <div className="pointer-events-none absolute inset-0 hero-bg" />
 
-      {/* Main Content */}
-      <motion.div 
-        className="relative z-10 text-center max-w-lg"
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1 }}
-      >
-        <h1 className="text-6xl md:text-7xl font-extrabold text-white drop-shadow-lg mb-4">
-          Monei
-        </h1>
+      {/* Header: logo left, menu right */}
+      <header className="absolute inset-x-0 top-0 z-10">
+        <div className="mx-auto max-w-6xl px-6 md:px-8 py-6 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="h-6 w-6 rounded-sm bg-gradient-to-br from-emerald-400 to-teal-500" />
+            <span className="text-lg font-semibold tracking-tight">Monei'</span>
+          </div>
+          <button className="p-2 rounded-md hover:bg-white/10 transition">
+            <Menu size={22} />
+          </button>
+        </div>
+      </header>
 
-        <p className="text-lg md:text-xl text-gray-300 mb-12">
-          Convert currencies easily in real-time with sleek animations and dark mode.
-        </p>
+      {/* central hero */}
+      <main className="min-h-screen grid place-items-center">
+        {/* green aura behind CTA */}
+        <div className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-[5%] w-[520px] h-[520px] rounded-full bg-emerald-500/12 blur-3xl" />
 
-        <motion.button
-          onClick={onStart}
-          className="px-12 py-4 text-lg md:text-xl font-semibold rounded-2xl bg-gradient-to-r from-purple-500 to-indigo-500 shadow-xl hover:scale-105 transition-transform duration-300"
-          whileTap={{ scale: 0.95 }}
-        >
-          Get Started
-        </motion.button>
-      </motion.div>
+        <div className="relative z-10 mx-auto max-w-3xl px-6 text-center">
+          <h1 className="text-5xl md:text-7xl font-bold tracking-tight">
+            Convert, Click, Glow
+          </h1>
+
+          <p className="mt-5 text-base md:text-lg text-white/70 leading-relaxed">
+            We make global currency conversion fast, accurate and effortless, so you can focus
+            <br className="hidden md:block" />
+            on what truly matters
+          </p>
+
+          <button
+            onClick={go}
+            className="group mt-10 inline-flex items-center gap-2 rounded-full px-7 py-3 text-lg font-semibold
+                       bg-emerald-400 text-black shadow-[0_0_30px_rgba(16,185,129,0.55)]
+                       hover:shadow-[0_0_45px_rgba(16,185,129,0.75)]
+                       transition-transform hover:-translate-y-0.5"
+          >
+            Get started now
+            <span className="transition-transform group-hover:translate-x-0.5">↗</span>
+          </button>
+
+          {/* trust row */}
+          <div className="mt-10 text-sm text-white/60">
+            They trust us
+            <div className="mt-2 flex items-center justify-center gap-1">
+              <span className="text-emerald-400">★</span>
+              <span className="text-emerald-400">★</span>
+              <span className="text-emerald-400">★</span>
+              <span className="text-emerald-400">★</span>
+              <span className="text-emerald-400">★</span>
+              <span className="ml-2">4.9 G</span>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      {/* bottom-right badge (like your mock) */}
+      <div className="absolute right-4 bottom-4 z-10">
+        <div className="px-3 py-1 rounded-full bg-white text-black text-xs font-medium shadow">
+          Made in Framer
+        </div>
+      </div>
     </div>
   );
 }

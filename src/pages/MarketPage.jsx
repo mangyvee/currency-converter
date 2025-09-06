@@ -1,11 +1,7 @@
 import React, { useMemo, useState } from "react";
-import { LineChart as LC, Line, ResponsiveContainer } from "recharts";
 import { Search, SlidersHorizontal } from "lucide-react";
-
-/** ----------------------------------------------------------------
- * MarketPage — currency pairs with filters, tabs, and sparklines
- * Style matches your glass/emerald theme.
- * ----------------------------------------------------------------*/
+import ConverterModal from "../components/ConverterModal";
+import { addTxn } from "../utils/txns";
 
 const PAIRS = [
   { pair: "EUR/USD", base: "EUR", quote: "USD" },
@@ -20,33 +16,22 @@ const PAIRS = [
 
 const TIMEFRAMES = ["1D", "7D", "1M", "1Y"];
 
-// quick tiny sparkline data (mocked; replace with API later)
-function makeSeries(seed = 1, n = 24) {
-  let x = seed * 100;
-  return Array.from({ length: n }, (_, i) => {
-    x += (Math.sin((i + seed) / 2) + Math.cos((i + seed) / 3)) * 6;
-    return { t: i, v: Math.max(10, x / 100) };
-  });
+function makeRow(seed, p) {
+  const rnd = Math.sin(seed) * 0.7;
+  return {
+    ...p,
+    price: Number((1 + (seed * 7) / 100).toFixed(4)),
+    change: Number(((seed % 2 ? -1 : 1) * (Math.abs(rnd) * 1.2)).toFixed(2)),
+    category:
+      p.pair.includes("USD")
+        ? "USD"
+        : p.pair.includes("EUR")
+        ? "EUR"
+        : p.pair.includes("GBP")
+        ? "GBP"
+        : "OTHER",
+  };
 }
-
-const BASE_DATA = Object.fromEntries(
-  PAIRS.map((p, i) => [
-    p.pair,
-    {
-      price: Number((1 + (i * 7) / 100).toFixed(4)),
-      change: Number(((i % 2 ? -1 : 1) * (Math.random() * 1.2)).toFixed(2)), // %
-      series: makeSeries(i + 1),
-      category:
-        p.pair.includes("USD")
-          ? "USD"
-          : p.pair.includes("EUR")
-          ? "EUR"
-          : p.pair.includes("GBP")
-          ? "GBP"
-          : "OTHER",
-    },
-  ])
-);
 
 export default function MarketPage() {
   const [q, setQ] = useState("");
@@ -55,8 +40,10 @@ export default function MarketPage() {
   const [sortKey, setSortKey] = useState("pair");
   const [sortDir, setSortDir] = useState("asc");
 
+  const [modal, setModal] = useState({ open: false, from: "USD", to: "KES" });
+
   const rows = useMemo(() => {
-    let list = PAIRS.map((p) => ({ ...p, ...BASE_DATA[p.pair] }));
+    let list = PAIRS.map((p, i) => makeRow(i + 1, p));
 
     if (q.trim()) {
       const s = q.toLowerCase();
@@ -77,11 +64,8 @@ export default function MarketPage() {
       return (A - B) * dir;
     });
 
-    // change the series “density” by timeframe (visual only for now)
-    const sliceBy =
-      tf === "1D" ? 24 : tf === "7D" ? 24 : tf === "1M" ? 24 : 24;
-    return list.map((r) => ({ ...r, s: r.series.slice(-sliceBy) }));
-  }, [q, cat, tf, sortKey, sortDir]);
+    return list;
+  }, [q, cat, sortKey, sortDir]);
 
   const changeSort = (key) => {
     setSortKey(key);
@@ -90,8 +74,8 @@ export default function MarketPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header controls */}
-      <div className="glass p-4 md:p-6">
+      {/* Header */}
+      <div className="glass p-4 md:p-6 rounded-3xl">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <h2 className="text-xl font-semibold">Market</h2>
@@ -99,7 +83,6 @@ export default function MarketPage() {
           </div>
 
           <div className="flex items-center gap-2 flex-wrap">
-            {/* timeframe tabs */}
             <div className="flex items-center gap-1 bg-white/5 border border-white/10 rounded-xl p-1">
               {TIMEFRAMES.map((t) => (
                 <button
@@ -107,18 +90,17 @@ export default function MarketPage() {
                   onClick={() => setTf(t)}
                   className={`px-3 py-1.5 text-sm rounded-lg ${
                     tf === t ? "bg-white/10" : "hover:bg-white/5"
-                  }`}
+                  } focus-ring`}
                 >
                   {t}
                 </button>
               ))}
             </div>
 
-            {/* category filter */}
             <select
               value={cat}
               onChange={(e) => setCat(e.target.value)}
-              className="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm outline-none"
+              className="select-dark rounded-xl px-3 py-2 text-sm outline-none focus-ring"
               title="Filter by category"
             >
               <option value="ALL">All</option>
@@ -128,20 +110,18 @@ export default function MarketPage() {
               <option value="OTHER">Other</option>
             </select>
 
-            {/* search */}
             <div className="glass px-3 py-2 rounded-xl flex items-center gap-2">
               <Search size={16} className="text-white/50" />
               <input
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
                 placeholder="Search (e.g., USD, EUR/USD)"
-                className="bg-transparent outline-none text-sm placeholder:text-white/40 w-48"
+                className="bg-transparent outline-none text-sm placeholder:text-white/40 w-48 focus-ring"
               />
             </div>
 
-            {/* dummy settings pill for future */}
             <button
-              className="px-3 py-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 flex items-center gap-2 text-sm"
+              className="px-3 py-2 rounded-xl bg-white/10 border border-white/10 hover:bg-white/15 flex items-center gap-2 text-sm focus-ring"
               title="Market settings (coming soon)"
             >
               <SlidersHorizontal size={16} />
@@ -152,7 +132,7 @@ export default function MarketPage() {
       </div>
 
       {/* Table */}
-      <div className="glass p-0 overflow-hidden">
+      <div className="glass p-0 overflow-hidden rounded-3xl">
         <table className="w-full text-sm">
           <thead className="bg-white/5 text-white/60">
             <tr>
@@ -165,8 +145,7 @@ export default function MarketPage() {
               <Th onClick={() => changeSort("change")} active={sortKey === "change"} dir={sortDir}>
                 24h
               </Th>
-              <th className="py-3 px-4 text-left">Trend</th>
-              <th className="py-3 px-4 text-right">Action</th>
+              <th scope="col" className="py-3 px-4 text-right">Action</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-white/10">
@@ -182,36 +161,49 @@ export default function MarketPage() {
                   {r.change >= 0 ? "+" : ""}
                   {r.change}%
                 </td>
-                <td className="py-2 px-4">
-                  <div className="h-8 w-40">
-                    <Sparkline data={r.s} positive={r.change >= 0} />
-                  </div>
-                </td>
                 <td className="py-3 px-4 text-right">
-                  <a
-                    href="/converter"
-                    className="px-3 py-1.5 rounded-lg bg-white/10 border border-white/10 hover:bg-white/15"
+                  <button
+                    onClick={() => setModal({ open: true, from: r.base, to: r.quote })}
+                    className="px-3 py-1.5 rounded-lg bg-white/10 border border-white/10 hover:bg-white/15 focus-ring"
                     title="Open converter"
                   >
                     Convert
-                  </a>
+                  </button>
                 </td>
               </tr>
             ))}
+            {rows.length === 0 && (
+              <tr>
+                <td colSpan={4} className="py-6 px-4 text-white/60">
+                  No pairs match your filters.
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
+
+      {/* Converter Modal */}
+      <ConverterModal
+        open={modal.open}
+        onClose={() => setModal((m) => ({ ...m, open: false }))}
+        presetFrom={modal.from}
+        presetTo={modal.to}
+        onConverted={({ from, to, amount, result, rate }) => {
+          addTxn({ from, to, amount, result, rate, at: new Date().toISOString() });
+        }}
+      />
     </div>
   );
 }
 
-/* ---------- helpers ---------- */
-
+/* ------- helpers ------- */
 function Th({ children, onClick, active, dir, left }) {
   return (
     <th
+      scope="col"
       onClick={onClick}
-      className={`py-3 px-4 select-none cursor-pointer ${left ? "text-left" : "text-left"}`}
+      className={`py-3 px-4 select-none cursor-pointer ${left ? "text-left" : "text-left"} focus-ring`}
       title="Sort"
     >
       <span className="inline-flex items-center gap-1">
@@ -221,21 +213,5 @@ function Th({ children, onClick, active, dir, left }) {
         </span>
       </span>
     </th>
-  );
-}
-
-function Sparkline({ data, positive }) {
-  return (
-    <ResponsiveContainer width="100%" height="100%">
-      <LC data={data} margin={{ top: 2, bottom: 2, left: 0, right: 0 }}>
-        <Line
-          type="monotone"
-          dataKey="v"
-          stroke={positive ? "#10B981" : "#EF4444"}
-          strokeWidth={2}
-          dot={false}
-        />
-      </LC>
-    </ResponsiveContainer>
   );
 }

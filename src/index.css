@@ -48,6 +48,15 @@
   .chip {
     @apply text-xs px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-white/70;
   }
+
+  /* High-contrast accessible focus ring */
+  .focus-ring {
+    @apply focus-visible:outline-none
+           focus-visible:ring-2
+           focus-visible:ring-emerald-400/60
+           focus-visible:ring-offset-2
+           focus-visible:ring-offset-black;
+  }
 }
 
 /* =========================================================
@@ -75,26 +84,22 @@ select.select-dark option {
 
 /* =========================================================
    LIGHT THEME OVERRIDES
-   When <html> does NOT have .dark, we map dark-styled
-   utilities to clean light equivalents—without changing JSX.
    ========================================================= */
 html:not(.dark) {
   --bg: #f6f8fb;
   --surface: #ffffff;
-  --text: #0b1220;           /* near-black */
-  --muted: #5b6577;          /* readable secondary */
+  --text: #0b1220;
+  --muted: #5b6577;
   --border: rgba(11,18,32,0.12);
   --chip: rgba(11,18,32,0.06);
   --chip-border: rgba(11,18,32,0.12);
 }
 
-/* Body & general text */
 html:not(.dark) body {
   background: var(--bg);
   color: var(--text);
 }
 
-/* Hero background (subtle light sweep) */
 html:not(.dark) .hero-bg {
   background:
     radial-gradient(900px 600px at 50% -10%, rgba(16,185,129,0.08), transparent 55%),
@@ -102,21 +107,18 @@ html:not(.dark) .hero-bg {
     linear-gradient(180deg, #ffffff 0%, #f6f8fb 100%);
 }
 
-/* Glass cards become light surfaces */
 html:not(.dark) .glass {
   background: var(--surface) !important;
   border: 1px solid var(--border) !important;
   box-shadow: 0 10px 30px rgba(11,18,32,0.06) !important;
 }
 
-/* Chips / small pills */
 html:not(.dark) .chip {
   background: var(--chip) !important;
   border-color: var(--chip-border) !important;
   color: var(--muted) !important;
 }
 
-/* Light select styling */
 html:not(.dark) select.select-dark {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -127,8 +129,7 @@ html:not(.dark) select.select-dark option {
   color: var(--text);
 }
 
-/* ---------- Smart remaps of common dark classes ---------- */
-/* Make former text-white variants readable on light */
+/* Smart remaps */
 html:not(.dark) .text-white      { color: var(--text) !important; }
 html:not(.dark) .text-white\/90  { color: rgba(11,18,32,0.90) !important; }
 html:not(.dark) .text-white\/80  { color: rgba(11,18,32,0.85) !important; }
@@ -136,16 +137,13 @@ html:not(.dark) .text-white\/70  { color: rgba(11,18,32,0.70) !important; }
 html:not(.dark) .text-white\/60  { color: rgba(11,18,32,0.60) !important; }
 html:not(.dark) .text-white\/50  { color: rgba(11,18,32,0.50) !important; }
 html:not(.dark) .text-white\/40  { color: rgba(11,18,32,0.40) !important; }
-html:not(.dark) .text-white\/30  { color: rgba(11,18,32,0.30) !important; }
 
-/* Remap translucent white bg/borders used in dark UI */
 html:not(.dark) .bg-white\/5               { background-color: rgba(11,18,32,0.04) !important; }
 html:not(.dark) .hover\:bg-white\/5:hover  { background-color: rgba(11,18,32,0.06) !important; }
 html:not(.dark) .bg-white\/10              { background-color: rgba(11,18,32,0.08) !important; }
 html:not(.dark) .hover\:bg-white\/10:hover { background-color: rgba(11,18,32,0.12) !important; }
 html:not(.dark) .border-white\/10          { border-color: var(--border) !important; }
 
-/* Headings & section titles: strong contrast in light */
 html:not(.dark) h1,
 html:not(.dark) h2,
 html:not(.dark) h3,
@@ -154,30 +152,7 @@ html:not(.dark) .section-title {
   color: #0b1220 !important;
 }
 
-/* Optional: softer subtitle tone in light */
 html:not(.dark) .subtitle,
 html:not(.dark) .text-muted {
   color: var(--muted) !important;
-}
-html:not(.dark) .glass h1,
-html:not(.dark) .glass h2,
-html:not(.dark) main h1,
-html:not(.dark) main h2,
-html:not(.dark) .card-title,
-html:not(.dark) .section-title,
-html:not(.dark) .heading {
-  color: #0b1220 !important;   /* near-black */
-  opacity: 1 !important;        /* kill any opacity-70/80 leftovers */
-}
-
-/* If titles were using very light classes from dark theme, remap them */
-html:not(.dark) .glass :is(.text-white, .text-white\/90, .text-white\/80, .text-gray-100, .text-gray-200) {
-  color: #0b1220 !important;
-}
-
-/* If a title used gradient text via text-transparent + bg-clip-text, make it readable */
-html:not(.dark) .text-transparent.bg-clip-text {
-  color: #0b1220 !important;
-  -webkit-text-fill-color: currentColor;
-  background: none !important;
 }

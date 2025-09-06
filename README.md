@@ -1,35 +1,47 @@
-# Monei — Currency Converter & Dashboard
+# 💱 Monei – Currency Converter App
 
-Live: **(add when deployed)**  
-Repo: **https://github.com/your-user/currency-converter**
+A sleek and modern currency converter app built with React + Vite + TailwindCSS.  
+It allows users to convert currencies with live exchange rates, toggle between dark/light mode, and navigate through a clean dashboard with multiple pages.
 
-Monei is a sleek currency conversion dashboard with live FX rates, a quick-swap modal, assets and market views, dark/light themes, and recent transactions.
+---
+
+## 🚀 Live Demo  
+👉 [Monei – Live App](https://currency-converter-xgyj.vercel.app)
 
 ---
 
 ## ✨ Features
-- Quick Convert **modal** with live rates (multi-provider fallback, no API key)
-- **Assets** page with search, change %, and convert actions
-- **Market** page with sortable pairs and filters
-- **Recent transactions** (saved to localStorage)
-- **Dark/Light** theme with persistence
-- Accessible focus states, dialog semantics, scoped table headers
+- 🌗 Dark/Light theme toggle with persistence  
+- 💹 Real-time currency conversion with multi-provider fallback  
+- 📊 Dashboard with charts and quick swap  
+- 📰 Market news & articles (dynamic placeholders)  
+- 📑 Accessible modals & UI (ARIA roles, focus rings, etc.)  
+- 🧪 Unit tests for modal, routes, and conversion  
 
 ---
 
-## 🧰 Tech Stack
-- React + Vite + React Router
-- Tailwind CSS (custom glass utilities)
-- Testing: Vitest + React Testing Library + jsdom
+## 📂 Pages
+- **Dashboard** – Overview of charts and quick swap  
+- **Assets** – Currency assets with table view  
+- **Market** – Market data and news  
+- **Profile & Settings** – User preferences and theme toggle  
+- **Support** – Help and contact page  
+- **404** – Custom not found page  
 
 ---
 
-## 🚀 Getting Started
+## 🛠️ Tech Stack
+- [React](https://react.dev/) + [Vite](https://vitejs.dev/)  
+- [TailwindCSS](https://tailwindcss.com/)  
+- [React Router](https://reactrouter.com/)  
+- [Vitest](https://vitest.dev/) + [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/)  
+- [Vercel](https://vercel.com/) for deployment  
 
-Clone and install dependencies:
+---
 
+## ⚡ Getting Started
+
+### 1. Clone the repo
 ```bash
 git clone https://github.com/mangyvee/currency-converter.git
 cd currency-converter
-npm install
-npm run dev
